@@ -18,5 +18,8 @@ executable gh-explorer
   main-is:             Main.hs
   build-depends:       base >=4.9 && <4.10
                      , scotty
+                     , github
+                     , text
+                     , mtl
 
   default-language:    Haskell2010

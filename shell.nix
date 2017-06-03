@@ -4,24 +4,14 @@ let
 
   inherit (nixpkgs) pkgs;
 
-  f = { mkDerivation, base, blaze-html, bytestring, http-types
-      , monad-logger, persistent, persistent-postgresql
-      , persistent-sqlite, persistent-template, resourcet, scotty, stdenv
-      , text, time, transformers, wai, wai-extra, wai-middleware-static
-      , warp
-      }:
+  f = { mkDerivation, base, github, mtl, scotty, stdenv, text }:
       mkDerivation {
         pname = "gh-explorer";
         version = "0.1.0.0";
         src = ./.;
         isLibrary = false;
         isExecutable = true;
-        executableHaskellDepends = [
-          base blaze-html bytestring http-types monad-logger persistent
-          persistent-postgresql persistent-sqlite persistent-template
-          resourcet scotty text time transformers wai wai-extra
-          wai-middleware-static warp
-        ];
+        executableHaskellDepends = [ base github mtl scotty text ];
         description = "Simple project exploring tool for GitHub based on Haskell, Nix and Elm";
         license = stdenv.lib.licenses.mit;
       };
