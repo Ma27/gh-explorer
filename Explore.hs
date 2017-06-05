@@ -1,16 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Explore where
 
-import qualified GitHub.Endpoints.Users.Followers as GitHub
+import qualified GitHub.Endpoints.Search as GitHub
+import qualified GitHub.Data as GitHub
 
-import Data.Monoid ((<>))
 import Data.Text (Text, pack)
 
 load = do
-  possibleUsers <- GitHub.usersFollowing "ma27"
-  return $ either (("Error: " <>) . pack . show)
-    (foldMap ((<> "\n") . formatUser))
-    possibleUsers
-
-formatUser :: GitHub.SimpleUser -> Data.Text.Text
-formatUser = GitHub.untagName . GitHub.simpleUserLogin
+  repos <- GitHub.searchRepos "q=topic:haskell"
+  return $ case repos of
+    Left e -> pack $ show e
+    Right r -> "success!"
