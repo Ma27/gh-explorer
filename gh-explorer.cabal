@@ -21,6 +21,6 @@ executable gh-explorer
                      , github
                      , text
                      , mtl
-                     , urlencoded
+                     , vector
 
   default-language:    Haskell2010

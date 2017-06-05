@@ -5,7 +5,7 @@ let
   inherit (nixpkgs) pkgs;
 
   f = { mkDerivation, base, github, mtl, scotty, stdenv, text
-      , urlencoded
+      , vector
       }:
       mkDerivation {
         pname = "gh-explorer";
@@ -13,9 +13,7 @@ let
         src = ./.;
         isLibrary = false;
         isExecutable = true;
-        executableHaskellDepends = [
-          base github mtl scotty text urlencoded
-        ];
+        executableHaskellDepends = [ base github mtl scotty text vector ];
         description = "Simple project exploring tool for GitHub based on Haskell, Nix and Elm";
         license = stdenv.lib.licenses.mit;
       };
