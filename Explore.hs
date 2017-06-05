@@ -8,7 +8,7 @@ import Data.Text (Text, pack)
 import Data.URLEncoded
 
 load q = do
-  repos <- GitHub.searchRepos $ "q=" `mappend` urlEncode q
+  repos <- GitHub.searchRepos $ "q=" `mappend` q
   return $ case repos of
     Left e -> pack $ show e
-    Right r -> "success!"
+    Right r -> pack $ show $ GitHub.searchResultTotalCount r
