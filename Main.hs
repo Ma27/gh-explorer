@@ -7,6 +7,7 @@ import Explore
 import Control.Monad.Trans (liftIO)
 
 main = scotty 3000 $ do
-  get "/" $ do
-    r <- liftIO load
+  get "/api/search/:query" $ do
+    q <- param "query"
+    r <- liftIO $ load q
     text $ fromStrict r
