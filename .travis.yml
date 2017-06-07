@@ -1,0 +1,9 @@
+language: nix
+sudo: false
+
+script:
+  - nix-shell -p stack --run "stack build --nix"
+
+cache:
+  directories:
+    - $HOME/.stack
