@@ -21,7 +21,7 @@ load q = do
                    _ -> pack $ show $
                         L.intercalate "\n" $
                         V.toList $
-                        V.map (\x -> resolve $ GitHub.repoDescription x) v
+                        V.map (resolve . GitHub.repoDescription) v
 
-resolve :: Maybe Text -> [Char]
-resolve s = maybe "" show s
+resolve :: Maybe Text -> String
+resolve = maybe "" show

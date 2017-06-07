@@ -3,6 +3,7 @@ sudo: false
 
 script:
   - nix-shell -p stack --run "stack build --nix"
+  - nix-shell -p hlint --run "hlint ."
 
 cache:
   directories:
