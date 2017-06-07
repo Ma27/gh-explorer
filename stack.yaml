@@ -1,0 +1,11 @@
+resolver: lts-8.17
+
+packages:
+- '.'
+
+nix:
+  packages: [git,zlib]
+
+extra-deps: []
+flags: {}
+extra-package-dbs: []
