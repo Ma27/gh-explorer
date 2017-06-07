@@ -10,7 +10,7 @@ import Data.Vector as V
 
 load q = do
   repos <- GitHub.searchRepos q
-  return $ case repos of
+  pure $ case repos of
     Left e -> pack $ show e
     Right r -> let
                  v = GitHub.searchResultResults r
