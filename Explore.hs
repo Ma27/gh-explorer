@@ -11,8 +11,8 @@ import Data.Vector as V
 load q = do
   repos <- GitHub.searchRepos q
   pure $ case repos of
-    Left e -> pack $ show e
-    Right r -> let
+    Left e -> Nothing
+    Right r -> Just $ let
                  v = GitHub.searchResultResults r
                  n = GitHub.searchResultTotalCount r
                in

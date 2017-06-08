@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 import Web.Scotty
-import Data.Text (Text, pack)
+import Data.Text as T
 import Data.Text.Lazy as L
 import Explore
 
@@ -10,4 +10,4 @@ main = scotty 3000 $
   get "/api/search/:query" $ do
     q <- param "query"
     r <- liftIO $ load q
-    text $ fromStrict r
+    text $ maybe (L.fromStrict "Error!") L.fromStrict r
