@@ -23,5 +23,6 @@ executable gh-explorer
                      , mtl
                      , vector
                      , aeson
+                     , HDBC
 
   default-language:    Haskell2010
