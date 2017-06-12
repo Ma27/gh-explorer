@@ -5,3 +5,9 @@ services:
     build: docker/mysql
     ports:
       - "3306:3306"
+  app:
+    build: .
+    ports:
+      - "8080:3000"
+    links:
+      - mysql
