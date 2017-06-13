@@ -29,4 +29,6 @@ main = do
       u <- param ("uuid" :: L.Text) :: ActionM L.Text
       p <- param ("interests" :: L.Text) :: ActionM L.Text
       r <- liftIO $ storePreferences u p conn
-      json $ Written (fromInteger r) (toStrict u)
+      json $ if validateUUID $ L.unpack u
+             then Left $ Written r $ L.toStrict u
+             else Right $ ServiceError "Invalid UUID!" $ L.toStrict u

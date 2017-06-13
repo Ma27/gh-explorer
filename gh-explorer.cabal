@@ -25,5 +25,6 @@ executable gh-explorer
                      , aeson
                      , HDBC
                      , HDBC-sqlite3 >=2.3
+                     , uuid
 
   default-language:    Haskell2010
