@@ -24,5 +24,6 @@ executable gh-explorer
                      , vector
                      , aeson
                      , HDBC
+                     , HDBC-sqlite3 >=2.3
 
   default-language:    Haskell2010

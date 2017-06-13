@@ -4,8 +4,8 @@ let
 
   inherit (nixpkgs) pkgs;
 
-  f = { mkDerivation, aeson, base, github, HDBC, mtl, scotty
-      , stdenv, text, vector
+  f = { mkDerivation, aeson, base, github, HDBC, HDBC-sqlite3, mtl
+      , scotty, stdenv, text, vector
       }:
       mkDerivation {
         pname = "gh-explorer";
@@ -14,7 +14,7 @@ let
         isLibrary = false;
         isExecutable = true;
         executableHaskellDepends = [
-          aeson base github HDBC mtl scotty text vector
+          aeson base github HDBC HDBC-sqlite3 mtl scotty text vector
         ];
         description = "Simple project exploring tool for GitHub based on Haskell, Nix and Elm";
         license = stdenv.lib.licenses.mit;

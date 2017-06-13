@@ -6,6 +6,6 @@ packages:
 nix:
   packages: [git,zlib]
 
-extra-deps: []
+extra-deps: ["HDBC-sqlite3-2.3.3.1"]
 flags: {}
 extra-package-dbs: []
