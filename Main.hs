@@ -13,10 +13,8 @@ import Database.HDBC.Sqlite3
 import Control.Monad.Trans (liftIO)
 
 main = do
-  -- conn and `run conn` are just temporary: we need a real schema
-  -- setup here
+  -- simple development database
   conn <- connectSqlite3 "ghex.db"
-  run conn "CREATE TABLE IF NOT EXISTS `user_interests` (`uuid` varchar(36) NOT NULL, `interests` text NOT NULL, PRIMARY KEY(`uuid`));" []
 
   -- our beloved webserver
   scotty 3000 $ do

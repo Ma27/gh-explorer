@@ -9,3 +9,6 @@ build:
 
 shell:
 	nix-shell -p stack
+
+migrate:
+	nix-shell -p sqlite --run "sqlite3 ghex.db < schema/sqlite.sql"
