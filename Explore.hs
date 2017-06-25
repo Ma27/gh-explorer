@@ -46,15 +46,20 @@ load q = do
                    0 -> Nothing
                    _ -> Just v
 
-storePreferences u p c =
-  if validateUUID $ L.unpack u then
-    persist u p c
-  else
-    pure $ toInteger $ -1
+storePreferences u p c = do
+  un <- liftIO $ countUUIDs u c
+  if isUUID c (L.unpack u) && (toInteger un < toInteger 1)
+    then persist u p c
+    else pure $ toInteger $ -1
   where
-    validateUUID u = case UUID.fromString u of
+    isUUID c u = case UUID.fromString u of
       Nothing -> False
       Just _ -> True
+    countUUIDs u c = do
+      q <- prepare c "SELECT `uuid` FROM `user_interests` WHERE `uuid` = ?"
+      execute q [toSql u]
+      r <- liftIO $ fetchAllRows q
+      pure $ Prelude.length r
     persist u p c = do
       n <- liftIO $ run c
              "INSERT INTO `user_interests` (`uuid`,`interests`) VALUES (?, ?);"
