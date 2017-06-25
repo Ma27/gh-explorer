@@ -4,7 +4,3 @@ sudo: false
 script:
   - make build
   - make lint
-
-cache:
-  directories:
-    - $HOME/.stack
