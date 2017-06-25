@@ -6,7 +6,7 @@ module Explore where
 import qualified GitHub.Endpoints.Search as GitHub
 import qualified GitHub.Data as GitHub
 
-import Data.Text (Text, pack)
+import Data.Text as T
 import Data.Aeson.Types
 
 import GHC.Generics
@@ -17,12 +17,15 @@ import Database.HDBC.Sqlite3
 import Data.UUID as UUID
 import Control.Monad.Trans (liftIO)
 
+import Data.Text.Lazy as L
+import System.IO
+
 data Written = Written { updated :: Integer
-                       , uuid :: Text
+                       , uuid :: T.Text
                        } deriving (Generic, Show)
 
-data ServiceError = ServiceError { reasonPhrase :: Text
-                                 , affectedUuid :: Text
+data ServiceError = ServiceError { reasonPhrase :: T.Text
+                                 , affectedUuid :: T.Text
                                  } deriving (Generic, Show)
 
 instance ToJSON GitHub.Repo
@@ -44,12 +47,16 @@ load q = do
                    _ -> Just v
 
 storePreferences u p c =
-  run c
-    "INSERT INTO `user_interests` (`uuid`,`interests`) VALUES (?, ?);"
-    [toSql u, toSql p]
-
--- TODO very simple validation logic, a check against the primary key is needed
--- as well
-validateUUID u = case UUID.fromString u of
-  Nothing -> False
-  Just _ -> True
+  if validateUUID $ L.unpack u then
+    persist u p c
+  else
+    pure $ toInteger $ -1
+  where
+    validateUUID u = case UUID.fromString u of
+      Nothing -> False
+      Just _ -> True
+    persist u p c = do
+      n <- liftIO $ run c
+             "INSERT INTO `user_interests` (`uuid`,`interests`) VALUES (?, ?);"
+             [toSql u, toSql p]
+      pure n
