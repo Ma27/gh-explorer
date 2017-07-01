@@ -3,9 +3,7 @@ import Web.Scotty
 import Data.Text as T
 import Data.Text.Lazy as L
 import Explore
-
-import Data.Maybe
-import Data.Vector as V
+import Utils
 
 import Database.HDBC
 import Database.HDBC.Sqlite3
@@ -21,18 +19,18 @@ main = do
     get "/api/search/:query" $ do
       q <- param "query"
       r <- liftIO $ load q
-      json $ fromMaybe V.empty r
+      json $ vectorResult r
 
     post "/api/:uuid/preferences" $ do
-      u <- param ("uuid" :: L.Text) :: ActionM L.Text
-      p <- param ("interests" :: L.Text) :: ActionM L.Text
+      u <- strParam "uuid"
+      p <- strParam "interests"
       r <- liftIO $ storePreferences u p conn
       json $ if r > -1
              then Left $ Written r $ L.toStrict u
              else Right $ ServiceError "Invalid UUID!" $ L.toStrict u
 
     get "/api/:uuid/dashboard" $ do
-      u <- param ("uuid" :: L.Text) :: ActionM L.Text
+      u <- strParam "uuid"
       r <- liftIO $ performDashboardQuery u conn
-      r' <- liftIO $ r
-      json $ fromMaybe V.empty r'
+      r' <- liftIO r
+      json $ vectorResult r'
