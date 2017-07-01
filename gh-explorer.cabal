@@ -26,5 +26,6 @@ executable gh-explorer
                      , HDBC
                      , HDBC-sqlite3 >=2.3
                      , uuid
+                     , split
 
   default-language:    Haskell2010

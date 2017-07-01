@@ -18,7 +18,6 @@ import Data.UUID as UUID
 import Control.Monad.Trans (liftIO)
 
 import Data.Text.Lazy as L
-import System.IO
 
 data Written = Written { updated :: Integer
                        , uuid :: T.Text
@@ -65,3 +64,14 @@ storePreferences u p c = do
              "INSERT INTO `user_interests` (`uuid`,`interests`) VALUES (?, ?);"
              [toSql u, toSql p]
       pure n
+
+performDashboardQuery u c = do
+  p <- liftIO $ prefs u c
+  pure $ load $ T.pack $ prefs2query p
+  where
+    prefs2query p = "topic:\"" ++ T.unpack (T.intercalate " || " (T.splitOn " " p)) ++ "\""
+    prefs u c = do
+      q <- prepare c "SELECT `interests` FROM `user_interests` WHERE `uuid` = ?"
+      execute q [toSql u]
+      r <- liftIO $ fetchAllRows q
+      pure $ fromSql $ Prelude.head $ Prelude.head r

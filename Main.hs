@@ -30,3 +30,9 @@ main = do
       json $ if r > -1
              then Left $ Written r $ L.toStrict u
              else Right $ ServiceError "Invalid UUID!" $ L.toStrict u
+
+    get "/api/:uuid/dashboard" $ do
+      u <- param ("uuid" :: L.Text) :: ActionM L.Text
+      r <- liftIO $ performDashboardQuery u conn
+      r' <- liftIO $ r
+      json $ fromMaybe V.empty r'
