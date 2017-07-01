@@ -31,6 +31,6 @@ main = do
 
     get "/api/:uuid/dashboard" $ do
       u <- strParam "uuid"
-      r <- liftIO $ performDashboardQuery u conn
-      r' <- liftIO r
+      r <- liftIO $ generateDashboardQuery u conn
+      r' <- liftIO $ load r
       json $ vectorResult r'

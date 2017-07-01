@@ -18,6 +18,8 @@ import Data.UUID as UUID
 import Control.Monad.Trans (liftIO)
 
 import Data.Text.Lazy as L
+import qualified Data.Vector as V
+import Data.Maybe
 
 data Written = Written { updated :: Integer
                        , uuid :: T.Text
@@ -65,13 +67,20 @@ storePreferences u p c = do
              [toSql u, toSql p]
       pure n
 
-performDashboardQuery u c = do
+generateDashboardQuery u c = do
   p <- liftIO $ prefs u c
-  pure $ load $ T.pack $ prefs2query p
+  pure $ T.pack $ prefs2query $ fromMaybe (T.pack "") p
   where
     prefs2query p = "topic:\"" ++ T.unpack (T.intercalate " || " (T.splitOn " " p)) ++ "\""
     prefs u c = do
       q <- prepare c "SELECT `interests` FROM `user_interests` WHERE `uuid` = ?"
       execute q [toSql u]
       r <- liftIO $ fetchAllRows q
-      pure $ fromSql $ Prelude.head $ Prelude.head r
+      pure $ let
+               h = head' r
+             in case Prelude.length h of
+               0 -> Nothing
+               _ -> Just $ fromSql $ Prelude.head h
+
+    head' [] = []
+    head' (x:_) = x
