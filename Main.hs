@@ -32,9 +32,8 @@ main = do
       u <- strParam "uuid"
       p <- strParam "interests"
       r <- liftIO $ storePreferences u p conn
-      json $ if r > -1
-             then Left $ Written r $ L.toStrict u
-             else Right $ ServiceError "Invalid UUID!" $ L.toStrict u
+      when (r == -1) next
+      json $ Written r $ L.toStrict u
 
     get "/api/:uuid/dashboard" $ do
       u <- strParam "uuid"
@@ -44,3 +43,7 @@ main = do
       json $ vectorResult r'
 
     get "/api/:uuid/dashboard" $ status status404
+    post "/api/:uuid/preferences" $ do
+      u <- strParam "uuid"
+      status status400
+      json $ ServiceError "Invalid UUID!" $ L.toStrict u
