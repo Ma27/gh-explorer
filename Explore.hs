@@ -71,11 +71,9 @@ generateDashboardQuery u c = do
   p <- liftIO $ prefs u c
   pure $ case p of
     Nothing -> Nothing
-    Just _ -> prefs2query $ fromJust p
+    Just _ -> Just $ prefs2query $ fromJust p
   where
-    prefs2query p = case Prelude.length x of
-      0 -> Nothing
-      _ -> Just $ T.pack $ "topic:\"" ++ T.unpack (T.intercalate " || " x) ++ "\""
+    prefs2query p = T.pack $ "topic:\"" ++ T.unpack (T.intercalate " || " x) ++ "\""
       where
         x = T.splitOn " " p
     prefs u c = do
