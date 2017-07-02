@@ -5,10 +5,15 @@ import Data.Text.Lazy as L
 import Explore
 import Utils
 
+import Data.Vector as V
+
 import Database.HDBC
 import Database.HDBC.Sqlite3
 
+import Data.Maybe
+
 import Control.Monad.Trans (liftIO)
+import Control.Monad (when)
 
 main = do
   -- simple development database
@@ -32,5 +37,8 @@ main = do
     get "/api/:uuid/dashboard" $ do
       u <- strParam "uuid"
       r <- liftIO $ generateDashboardQuery u conn
-      r' <- liftIO $ load r
+      when (isNothing r) next
+      r' <- liftIO $ load $ fromJust r
       json $ vectorResult r'
+
+    get "/api/:uuid/dashboard" $ text "WAT"

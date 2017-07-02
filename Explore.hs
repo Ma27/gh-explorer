@@ -69,9 +69,15 @@ storePreferences u p c = do
 
 generateDashboardQuery u c = do
   p <- liftIO $ prefs u c
-  pure $ T.pack $ prefs2query $ fromMaybe (T.pack "") p
+  pure $ case p of
+    Nothing -> Nothing
+    Just _ -> prefs2query $ fromJust p
   where
-    prefs2query p = "topic:\"" ++ T.unpack (T.intercalate " || " (T.splitOn " " p)) ++ "\""
+    prefs2query p = case Prelude.length x of
+      0 -> Nothing
+      _ -> Just $ T.pack $ "topic:\"" ++ T.unpack (T.intercalate " || " x) ++ "\""
+      where
+        x = T.splitOn " " p
     prefs u c = do
       q <- prepare c "SELECT `interests` FROM `user_interests` WHERE `uuid` = ?"
       execute q [toSql u]
