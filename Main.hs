@@ -15,6 +15,8 @@ import Data.Maybe
 import Control.Monad.Trans (liftIO)
 import Control.Monad (when)
 
+import Network.HTTP.Types.Status
+
 main = do
   -- simple development database
   conn <- connectSqlite3 "ghex.db"
@@ -41,4 +43,4 @@ main = do
       r' <- liftIO $ load $ fromJust r
       json $ vectorResult r'
 
-    get "/api/:uuid/dashboard" $ text "WAT"
+    get "/api/:uuid/dashboard" $ status status404
