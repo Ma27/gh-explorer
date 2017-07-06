@@ -28,5 +28,6 @@ executable gh-explorer
                      , uuid
                      , split
                      , http-types
+                     , time
 
   default-language:    Haskell2010

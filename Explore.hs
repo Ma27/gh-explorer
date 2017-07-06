@@ -21,6 +21,9 @@ import Data.Text.Lazy as L
 import qualified Data.Vector as V
 import Data.Maybe
 
+import Data.Time.Clock
+import Data.Time.Calendar
+
 data Written = Written { updated :: Integer
                        , uuid :: T.Text
                        } deriving (Generic, Show)
@@ -69,13 +72,16 @@ storePreferences u p c = do
 
 generateDashboardQuery u c = do
   p <- liftIO $ prefs u c
+  d <- date'
   pure $ case p of
     Nothing -> Nothing
-    Just _ -> Just $ prefs2query $ fromJust p
+    Just _ -> Just $ prefs2query d $ fromJust p
   where
-    prefs2query p = T.pack $ "topic:\"" ++ T.unpack (T.intercalate " || " x) ++ "\""
-      where
-        x = T.splitOn " " p
+    prefs2query d p = T.pack $ "topic:\""
+      ++ T.unpack (T.intercalate " || " $ T.splitOn " " p)
+      ++ "\" created:>"
+      ++ d
+
     prefs u c = do
       q <- prepare c "SELECT `interests` FROM `user_interests` WHERE `uuid` = ?"
       execute q [toSql u]
@@ -88,3 +94,8 @@ generateDashboardQuery u c = do
 
     head' [] = []
     head' (x:_) = x
+
+    date' = do
+      d <- fmap (toGregorian . utctDay) getCurrentTime
+      let (y, _, _) = d
+      pure $ show $ y - 1
