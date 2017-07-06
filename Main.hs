@@ -13,7 +13,7 @@ import Database.HDBC.Sqlite3
 import Data.Maybe
 
 import Control.Monad.Trans (liftIO)
-import Control.Monad (when)
+import Control.Monad (when, unless)
 
 import Network.HTTP.Types.Status
 
@@ -31,7 +31,9 @@ main = do
     post "/api/:uuid/preferences" $ do
       u <- strParam "uuid"
       p <- strParam "interests"
-      r <- liftIO $ storePreferences u p conn
+      o <- strParam "order"
+      unless (o `Prelude.elem` ["stars", "date"]) next
+      r <- liftIO $ storePreferences u p o conn
       when (r == -1) next
       json $ Written r $ L.toStrict u
 

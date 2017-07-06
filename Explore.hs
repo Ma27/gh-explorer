@@ -50,10 +50,10 @@ load q = do
                    0 -> Nothing
                    _ -> Just v
 
-storePreferences u p c = do
+storePreferences u p o c = do
   un <- liftIO $ countUUIDs u c
   if isUUID c (L.unpack u) && (toInteger un < toInteger 1)
-    then persist u p c
+    then persist u p o c
     else pure $ toInteger $ -1
   where
     isUUID c u = case UUID.fromString u of
@@ -64,10 +64,10 @@ storePreferences u p c = do
       execute q [toSql u]
       r <- liftIO $ fetchAllRows q
       pure $ Prelude.length r
-    persist u p c = do
+    persist u p o c = do
       n <- liftIO $ run c
-             "INSERT INTO `user_interests` (`uuid`,`interests`) VALUES (?, ?);"
-             [toSql u, toSql p]
+             "INSERT INTO `user_interests` (`uuid`,`interests`,`order_by`) VALUES (?, ?, ?);"
+             [toSql u, toSql p, toSql o]
       pure n
 
 generateDashboardQuery u c = do
