@@ -48,4 +48,4 @@ main = do
     post "/api/:uuid/preferences" $ do
       u <- strParam "uuid"
       status status400
-      json $ ServiceError "Invalid UUID!" $ L.toStrict u
+      json $ ServiceError "Invalid UUID or `order` param!" $ L.toStrict u

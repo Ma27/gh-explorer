@@ -71,26 +71,30 @@ storePreferences u p o c = do
       pure n
 
 generateDashboardQuery u c = do
-  p <- liftIO $ prefs u c
+  r <- liftIO $ prefs u c
   d <- date'
-  pure $ case p of
+  pure $ case r of
     Nothing -> Nothing
-    Just _ -> Just $ prefs2query d $ fromJust p
+    Just (p, o) -> Just $ prefs2query d o p
   where
-    prefs2query d p = T.pack $ "topic:\""
+    prefs2query d o p = T.pack $ "topic:\""
       ++ T.unpack (T.intercalate " || " $ T.splitOn " " p)
-      ++ "\" created:>"
-      ++ d
+      ++ "\" "
+      ++ if o == "date" then "created:>" ++ d
+         else "stars:>5000"
 
     prefs u c = do
-      q <- prepare c "SELECT `interests` FROM `user_interests` WHERE `uuid` = ?"
+      q <- prepare c "SELECT `interests`, `order_by` FROM `user_interests` WHERE `uuid` = ?"
       execute q [toSql u]
       r <- liftIO $ fetchAllRows q
       pure $ let
                h = head' r
              in case Prelude.length h of
                0 -> Nothing
-               _ -> Just $ fromSql $ Prelude.head h
+               _ -> Just (
+                          fromSql $ Prelude.head h :: T.Text,
+                          fromSql $ Prelude.last h :: T.Text
+                         )
 
     head' [] = []
     head' (x:_) = x
