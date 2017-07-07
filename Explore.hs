@@ -103,3 +103,21 @@ generateDashboardQuery u c = do
       d <- fmap (toGregorian . utctDay) getCurrentTime
       let (y, _, _) = d
       pure $ show y
+
+persistStat q c = do
+  t' <- fmap (showGregorian . utctDay) getCurrentTime
+  run c
+    "INSERT INTO `stats` (`query`,`time`) VALUES (?, ?)"
+    [toSql q, toSql t']
+  pure True
+
+stats c = do
+  r <- liftIO $ loadStats c
+  let a = Prelude.map (Prelude.map fromSql) r :: [[String]]
+  pure a
+  where
+    loadStats c = do
+      q <- prepare c "SELECT `query`, `time` FROM `stats`;"
+      execute q []
+      r <- liftIO $ fetchAllRows q
+      pure $ Prelude.map (Prelude.map fromSql) r

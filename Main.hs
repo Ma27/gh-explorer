@@ -24,6 +24,11 @@ main = do
   -- our beloved webserver
   scotty 3000 $ do
     get "/api/search/:query" $ do
+      q <- strParam "query"
+      r <- liftIO $ persistStat q conn
+      when r next
+
+    get "/api/search/:query" $ do
       q <- param "query"
       r <- liftIO $ load q
       json $ vectorResult r
@@ -43,6 +48,10 @@ main = do
       when (isNothing r) next
       r' <- liftIO $ load $ fromJust r
       json $ vectorResult r'
+
+    get "/api/stats" $ do
+      s <- liftIO (stats conn)
+      json s
 
     get "/api/:uuid/dashboard" $ status status404
     post "/api/:uuid/preferences" $ do
