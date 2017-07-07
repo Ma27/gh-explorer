@@ -50,10 +50,10 @@ load q = do
                    0 -> Nothing
                    _ -> Just v
 
-storePreferences u p o c = do
+storePreferences u p f c = do
   un <- liftIO $ countUUIDs u c
   if isUUID c (L.unpack u) && (toInteger un < toInteger 1)
-    then persist u p o c
+    then persist u p f c
     else pure $ toInteger $ -1
   where
     isUUID c u = case UUID.fromString u of
@@ -64,10 +64,10 @@ storePreferences u p o c = do
       execute q [toSql u]
       r <- liftIO $ fetchAllRows q
       pure $ Prelude.length r
-    persist u p o c = do
+    persist u p f c = do
       n <- liftIO $ run c
-             "INSERT INTO `user_interests` (`uuid`,`interests`,`order_by`) VALUES (?, ?, ?);"
-             [toSql u, toSql p, toSql o]
+             "INSERT INTO `user_interests` (`uuid`,`interests`,`filter`) VALUES (?, ?, ?);"
+             [toSql u, toSql p, toSql f]
       pure n
 
 generateDashboardQuery u c = do
@@ -75,16 +75,16 @@ generateDashboardQuery u c = do
   d <- date'
   pure $ case r of
     Nothing -> Nothing
-    Just (p, o) -> Just $ prefs2query d o p
+    Just (p, f) -> Just $ prefs2query d f p
   where
-    prefs2query d o p = T.pack $ "topic:\""
+    prefs2query d f p = T.pack $ "topic:\""
       ++ T.unpack (T.intercalate " || " $ T.splitOn " " p)
       ++ "\" "
-      ++ if o == "date" then "created:>" ++ d
+      ++ if f == "date" then "created:>=" ++ d
          else "stars:>5000"
 
     prefs u c = do
-      q <- prepare c "SELECT `interests`, `order_by` FROM `user_interests` WHERE `uuid` = ?"
+      q <- prepare c "SELECT `interests`, `filter` FROM `user_interests` WHERE `uuid` = ?"
       execute q [toSql u]
       r <- liftIO $ fetchAllRows q
       pure $ let
@@ -102,4 +102,4 @@ generateDashboardQuery u c = do
     date' = do
       d <- fmap (toGregorian . utctDay) getCurrentTime
       let (y, _, _) = d
-      pure $ show $ y - 1
+      pure $ show y

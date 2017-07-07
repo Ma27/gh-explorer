@@ -31,9 +31,9 @@ main = do
     post "/api/:uuid/preferences" $ do
       u <- strParam "uuid"
       p <- strParam "interests"
-      o <- strParam "order"
-      unless (o `Prelude.elem` ["stars", "date"]) next
-      r <- liftIO $ storePreferences u p o conn
+      f <- strParam "filter"
+      unless (f `Prelude.elem` ["stars", "date"]) next
+      r <- liftIO $ storePreferences u p f conn
       when (r == -1) next
       json $ Written r $ L.toStrict u
 
@@ -48,4 +48,4 @@ main = do
     post "/api/:uuid/preferences" $ do
       u <- strParam "uuid"
       status status400
-      json $ ServiceError "Invalid UUID or `order` param!" $ L.toStrict u
+      json $ ServiceError "Invalid UUID or `filter` param!" $ L.toStrict u

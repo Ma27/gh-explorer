@@ -6,6 +6,6 @@ DROP TABLE IF EXISTS `user_interests`;
 CREATE TABLE `user_interests` (
   `uuid` varchar(36) NOT NULL,
   `interests` text NOT NULL,
-  `order_by` varchar(20) NOT NULL,
+  `filter` varchar(20) NOT NULL,
   PRIMARY KEY(`uuid`)
 );
