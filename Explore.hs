@@ -60,9 +60,7 @@ storePreferences u p f c = do
       Nothing -> False
       Just _ -> True
     countUUIDs u c = do
-      q <- prepare c "SELECT `uuid` FROM `user_interests` WHERE `uuid` = ?"
-      execute q [toSql u]
-      r <- liftIO $ fetchAllRows q
+      r <- liftIO $ query "SELECT `uuid` FROM `user_interests` WHERE `uuid` = ?;" [toSql u] c
       pure $ Prelude.length r
     persist u p f c = do
       n <- liftIO $ run c
@@ -84,9 +82,7 @@ generateDashboardQuery u c = do
          else "stars:>5000"
 
     prefs u c = do
-      q <- prepare c "SELECT `interests`, `filter` FROM `user_interests` WHERE `uuid` = ?"
-      execute q [toSql u]
-      r <- liftIO $ fetchAllRows q
+      r <- liftIO $ query "SELECT `interests`, `filter` FROM `user_interests` WHERE `uuid` = ?;" [toSql u] c
       pure $ let
                h = head' r
              in case Prelude.length h of
@@ -123,3 +119,10 @@ stats c = do
       pure $ Prelude.map (Prelude.map fromSql) r
 
 date x = fmap x getCurrentTime
+
+query :: String -> [SqlValue] -> Connection -> IO [[SqlValue]]
+query q p c = do
+  q' <- prepare c q
+  execute q' p
+  r <- liftIO $ fetchAllRows q'
+  pure r
