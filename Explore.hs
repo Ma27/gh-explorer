@@ -32,12 +32,17 @@ data ServiceError = ServiceError { reasonPhrase :: T.Text
                                  , affectedUuid :: T.Text
                                  } deriving (Generic, Show)
 
+data Stat = Stat { components :: [String]
+                 , statDate :: String
+                 } deriving (Generic, Show, Eq)
+
 instance ToJSON GitHub.Repo
 instance ToJSON GitHub.SimpleOwner
 instance ToJSON GitHub.RepoRef
 instance ToJSON GitHub.OwnerType
 instance ToJSON Written
 instance ToJSON ServiceError
+instance ToJSON Stat
 
 load q = do
   repos <- GitHub.searchRepos q
@@ -107,15 +112,20 @@ persistStat q c = do
     [toSql q, toSql t']
   pure True
 
+stats :: Connection -> IO [Stat]
 stats c = do
   r <- liftIO $ loadStats c
   let a = map (map fromSql) r :: [[String]]
-  pure a
+  pure $ foldl row [] a
   where
+    row i p = let
+                q = head p
+                s = Stat [q] $ last p
+              in
+                if s `elem` i then i
+                else s : i
     loadStats c = do
-      q <- prepare c "SELECT `query`, `time` FROM `stats`;"
-      execute q []
-      r <- liftIO $ fetchAllRows q
+      r <- liftIO $ query "SELECT `query`, `time` FROM `stats` ORDER BY `time` DESC;" [] c
       pure $ map (map fromSql) r
 
 date x = fmap x getCurrentTime
