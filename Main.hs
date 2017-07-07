@@ -5,7 +5,7 @@ import Data.Text.Lazy as L
 import Explore
 import Utils
 
-import Data.Vector as V
+import qualified Data.Vector as V
 
 import Database.HDBC
 import Database.HDBC.Sqlite3
@@ -37,7 +37,7 @@ main = do
       u <- strParam "uuid"
       p <- strParam "interests"
       f <- strParam "filter"
-      unless (f `Prelude.elem` ["stars", "date"]) next
+      unless (f `elem` ["stars", "date"]) next
       r <- liftIO $ storePreferences u p f conn
       when (r == -1) next
       json $ Written r $ L.toStrict u

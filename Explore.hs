@@ -6,7 +6,7 @@ module Explore where
 import qualified GitHub.Endpoints.Search as GitHub
 import qualified GitHub.Data as GitHub
 
-import Data.Text as T
+import qualified Data.Text as T
 import Data.Aeson.Types
 
 import GHC.Generics
@@ -17,7 +17,7 @@ import Database.HDBC.Sqlite3
 import Data.UUID as UUID
 import Control.Monad.Trans (liftIO)
 
-import Data.Text.Lazy as L
+import qualified Data.Text.Lazy as L
 import qualified Data.Vector as V
 import Data.Maybe
 
@@ -61,7 +61,7 @@ storePreferences u p f c = do
       Just _ -> True
     countUUIDs u c = do
       r <- liftIO $ query "SELECT `uuid` FROM `user_interests` WHERE `uuid` = ?;" [toSql u] c
-      pure $ Prelude.length r
+      pure $ length r
     persist u p f c = do
       n <- liftIO $ run c
              "INSERT INTO `user_interests` (`uuid`,`interests`,`filter`) VALUES (?, ?, ?);"
@@ -85,11 +85,11 @@ generateDashboardQuery u c = do
       r <- liftIO $ query "SELECT `interests`, `filter` FROM `user_interests` WHERE `uuid` = ?;" [toSql u] c
       pure $ let
                h = head' r
-             in case Prelude.length h of
+             in case length h of
                0 -> Nothing
                _ -> Just (
-                          fromSql $ Prelude.head h :: T.Text,
-                          fromSql $ Prelude.last h :: T.Text
+                          fromSql $ head h :: T.Text,
+                          fromSql $ last h :: T.Text
                          )
 
     head' [] = []
@@ -109,14 +109,14 @@ persistStat q c = do
 
 stats c = do
   r <- liftIO $ loadStats c
-  let a = Prelude.map (Prelude.map fromSql) r :: [[String]]
+  let a = map (map fromSql) r :: [[String]]
   pure a
   where
     loadStats c = do
       q <- prepare c "SELECT `query`, `time` FROM `stats`;"
       execute q []
       r <- liftIO $ fetchAllRows q
-      pure $ Prelude.map (Prelude.map fromSql) r
+      pure $ map (map fromSql) r
 
 date x = fmap x getCurrentTime
 
