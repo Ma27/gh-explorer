@@ -119,11 +119,14 @@ stats c = do
   pure $ foldl row [] a
   where
     row i p = let
-                q = head p
-                s = Stat [q] $ last p
+                s = Stat (queryData $ head p) $ last p
               in
                 if s `elem` i then i
                 else s : i
+
+    queryData :: String -> [String]
+    queryData q = map T.unpack $ T.splitOn " " $ T.pack q
+
     loadStats c = do
       r <- liftIO $ query "SELECT `query`, `time` FROM `stats` ORDER BY `time` DESC;" [] c
       pure $ map (map fromSql) r
