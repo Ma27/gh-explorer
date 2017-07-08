@@ -44,6 +44,7 @@ instance ToJSON Written
 instance ToJSON ServiceError
 instance ToJSON Stat
 
+load :: T.Text -> IO (Maybe (V.Vector GitHub.Repo))
 load q = do
   repos <- GitHub.searchRepos q
   pure $ case repos of
@@ -55,6 +56,7 @@ load q = do
                    0 -> Nothing
                    _ -> Just v
 
+storePreferences :: L.Text -> L.Text -> L.Text -> Connection -> IO Integer
 storePreferences u p f c = do
   un <- liftIO $ countUUIDs u c
   if isUUID c (L.unpack u) && (toInteger un < toInteger 1)
@@ -73,6 +75,7 @@ storePreferences u p f c = do
              [toSql u, toSql p, toSql f]
       pure n
 
+generateDashboardQuery :: L.Text -> Connection -> IO (Maybe T.Text)
 generateDashboardQuery u c = do
   r <- liftIO $ prefs u c
   d <- date'
@@ -105,6 +108,7 @@ generateDashboardQuery u c = do
       let (y, _, _) = d
       pure $ show y
 
+persistStat :: L.Text -> Connection -> IO Bool
 persistStat q c = do
   t' <- date (showGregorian . utctDay)
   l <- run c
