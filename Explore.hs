@@ -107,10 +107,10 @@ generateDashboardQuery u c = do
 
 persistStat q c = do
   t' <- date (showGregorian . utctDay)
-  run c
+  l <- run c
     "INSERT INTO `stats` (`query`,`time`) VALUES (?, ?)"
     [toSql q, toSql t']
-  pure True
+  pure $ l > 0
 
 stats :: Connection -> IO [Stat]
 stats c = do
