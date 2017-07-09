@@ -24,6 +24,8 @@ import Data.Maybe
 import Data.Time.Clock
 import Data.Time.Calendar
 
+import Query
+
 data Written = Written { updated :: Integer
                        , uuid :: T.Text
                        } deriving (Generic, Show)
@@ -32,7 +34,7 @@ data ServiceError = ServiceError { reasonPhrase :: T.Text
                                  , affectedUuid :: T.Text
                                  } deriving (Generic, Show)
 
-data Stat = Stat { components :: [String]
+data Stat = Stat { components :: [QueryComponent]
                  , statDate :: String
                  } deriving (Generic, Show, Eq)
 
@@ -123,13 +125,10 @@ stats c = do
   pure $ foldl row [] a
   where
     row i p = let
-                s = Stat (queryData $ head p) $ last p
+                s = Stat (parseQ $ head p) $ last p
               in
                 if s `elem` i then i
                 else s : i
-
-    queryData :: String -> [String]
-    queryData q = map T.unpack $ T.splitOn " " $ T.pack q
 
     loadStats c = do
       r <- liftIO $ query "SELECT `query`, `time` FROM `stats` ORDER BY `time` DESC;" [] c
