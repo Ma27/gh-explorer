@@ -121,8 +121,7 @@ persistStat q c = do
 stats :: Connection -> IO [Stat]
 stats c = do
   r <- liftIO $ loadStats c
-  let a = map (map fromSql) r :: [[String]]
-  pure $ foldl row [] a
+  pure $ foldl row [] r
   where
     row i p = let
                 s = Stat (parseQ $ head p) $ last p
