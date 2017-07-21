@@ -29,6 +29,6 @@ executable gh-explorer
                      , split
                      , http-types
                      , time
-                     , parsec
+                     , regex-compat
 
   default-language:    Haskell2010
