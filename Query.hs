@@ -20,10 +20,10 @@ parseQ q = resolve $ match q
   where
     resolve :: Maybe (String, String, String, [String]) -> [QueryComponent]
     resolve Nothing = [] :: [QueryComponent]
-    resolve (Just (_, _, _, l)) = map toCmp $ filter (/= "") l
+    resolve (Just l) = map toCmp $ filter (/= "") l
 
     toCmp :: String -> QueryComponent
     toCmp s = QueryComponent "topic" $ T.splitOn " " $ T.pack s
 
     match :: String -> Maybe (String, String, String, [String])
-    match = matchRegexAll (mkRegex "topic:([a-z]+)|\"([a-z ]+)\"")
+    match = matchRegex (mkRegex "topic:([a-z]+)|\"([a-z ]+)\"")
