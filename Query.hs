@@ -8,16 +8,24 @@ import GHC.Generics
 import Data.Maybe
 import Text.Regex.Posix
 
+import Data.List.Utils (replace)
+
 data QueryComponent = QueryComponent { name :: T.Text
                                      , content :: [T.Text]
                                      } deriving (Show, Generic, Eq)
 
 parseQ :: String -> [QueryComponent]
-parseQ q = resolve $ match q
+parseQ q = resolve q $ match q
   where
-    resolve :: [String] -> [QueryComponent]
-    resolve [] = [] :: [QueryComponent]
-    resolve l@(_:_) = map toCmp l
+    resolve :: String -> [String] -> [QueryComponent]
+    resolve q [] = [] :: [QueryComponent]
+    resolve q l@(_:_) = map toCmp l ++ [toCmp ("default:" ++ t q l)]
+      where
+        t :: String -> [String] -> String
+        t = foldl st
+
+        st :: String -> String -> String
+        st q x = replace x "" q
 
     toCmp :: String -> QueryComponent
     toCmp s = QueryComponent h $ T.splitOn " " $ last s'
