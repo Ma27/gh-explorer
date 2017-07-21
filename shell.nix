@@ -5,7 +5,7 @@ let
   inherit (nixpkgs) pkgs;
 
   f = { mkDerivation, aeson, base, github, HDBC, HDBC-sqlite3
-      , http-types, mtl, regex-compat, scotty, split, stdenv, text, time
+      , http-types, mtl, regex-posix, scotty, split, stdenv, text, time
       , uuid, vector
       }:
       mkDerivation {
@@ -15,7 +15,7 @@ let
         isLibrary = false;
         isExecutable = true;
         executableHaskellDepends = [
-          aeson base github HDBC HDBC-sqlite3 http-types mtl regex-compat
+          aeson base github HDBC HDBC-sqlite3 http-types mtl regex-posix
           scotty split text time uuid vector
         ];
         description = "Simple project exploring tool for GitHub based on Haskell, Nix and Elm";

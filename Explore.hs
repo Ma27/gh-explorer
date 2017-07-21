@@ -45,6 +45,7 @@ instance ToJSON GitHub.OwnerType
 instance ToJSON Written
 instance ToJSON ServiceError
 instance ToJSON Stat
+instance ToJSON QueryComponent
 
 load :: T.Text -> IO (Maybe (V.Vector GitHub.Repo))
 load q = do
