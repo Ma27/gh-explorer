@@ -28,11 +28,14 @@ parseQ q = resolve q $ match q
         st q x = replace x "" q
 
     toCmp :: String -> QueryComponent
-    toCmp s = QueryComponent h $ T.splitOn " " $ last s'
+    toCmp s = QueryComponent h $ filter' $ T.splitOn " " $ last s'
       where
         s' = T.splitOn ":" $ T.pack s
         h = if length s' > 1 then head s'
             else T.pack "search"
+
+        filter' :: [T.Text] -> [T.Text]
+        filter' = filter (/= "")
 
     match :: String -> [String]
     match q = getAllTextMatches $ q =~ ("\\w+:(([A-z0-9]+)|\"([A-z0-9 ]+)\")" :: String) :: [String]
