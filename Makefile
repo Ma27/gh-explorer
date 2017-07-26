@@ -1,14 +1,13 @@
+default: build
+
 lint:
-	nix-shell -p hlint --run "hlint ."
+	$(MAKE) -C backend/ lint
 
 watch:
-	nix-shell -p stack --run "stack build --nix --file-watch --exec gh-explorer"
+	$(MAKE) -C backend/ watch
 
 build:
-	nix-shell -p stack --run "stack build --nix"
-
-shell:
-	nix-shell -p stack
+	nix-build .
 
 migrate:
-	nix-shell -p sqlite --run "sqlite3 ghex.db < schema/sqlite.sql"
+	nix-shell -p sqlite --run "sqlite3 backend/ghex.db < backend/schema/sqlite.sql"

@@ -12,6 +12,7 @@ let
         pname = "gh-explorer";
         version = "0.1.0.0";
         src = ./.;
+        postUnpack = "sourceRoot+=/backend; echo source root reset to $sourceRoot";
         isLibrary = false;
         isExecutable = true;
         executableHaskellDepends = [

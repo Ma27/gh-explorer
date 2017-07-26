@@ -1,3 +1,10 @@
-dist/
-.stack-work/
-ghex.db*
+backend/dist/
+backend/.stack-work/
+backend/ghex.db*
+
+frontend/elm-stuff/
+
+result
+*/result
+result-*
+*/result-*
