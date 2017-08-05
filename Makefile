@@ -8,12 +8,15 @@ backend:
 
 frontend:
 	nix-shell -p elmPackages.elm \
-		--run "pushd frontend; elm-reactor; popd;"
+		--run "$(MAKE) reactor"
 
 build:
 	nix-build .
 
 migrate:
 	nix-shell -p sqlite --run "sqlite3 backend/ghex.db < backend/schema/sqlite.sql"
+
+reactor:
+	(cd frontend && elm-reactor)
 
 .PHONY: backend frontend
